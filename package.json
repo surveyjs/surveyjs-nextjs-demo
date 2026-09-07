@@ -1,0 +1,52 @@
+{
+  "name": "surveyjs-nextjs",
+  "version": "0.1.0",
+  "private": true,
+  "license": "https://surveyjs.io/licensing",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "npm run build",
+    "e2e:ci": "playwright install chromium && playwright test",
+    "e2e:dev": "playwright install chromium && playwright test --config=playwright.dev.config.ts",
+    "e2e:ui": "npx playwright test --ui"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
+    "ai-form-response-extractor": "^0.2.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
+    "next": "^15.3.0",
+    "next-themes": "^0.4.4",
+    "openai": "^6.49.0",
+    "radix-ui": "^1.6.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "survey-analytics": "latest",
+    "survey-core": "latest",
+    "survey-creator-core": "latest",
+    "survey-creator-react": "latest",
+    "survey-pdf": "latest",
+    "survey-react-ui": "latest",
+    "tailwind-merge": "^3.0.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^20.14.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^8",
+    "eslint-config-next": "^15.3.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.0.0",
+    "tw-animate-css": "^1.2.5",
+    "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}

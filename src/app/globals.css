@@ -1,0 +1,339 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+
+/* Dark mode is driven by the `.dark` class on <html> (next-themes,
+   attribute="class"). The custom variant mirrors the canonical shadcn demo. */
+@custom-variant dark (&:is(.dark *));
+
+/* Map the shadcn design tokens onto Tailwind color/radius utilities. Because
+   these reference the runtime CSS variables (not literals), every utility
+   (`bg-background`, `text-foreground`, `rounded-lg`, …) re-resolves instantly
+   when the active visual style or light/dark mode flips a variable.
+   Mirrors shared/src/shadcn-neutral-theme.css + tailwind-theme.css from the
+   canonical demo (C:\survey.js\Examples\css-bridges\demos\shadcn). */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Base palette — shadcn neutral (baseColor: "neutral"). This is the "default"
+   visual style; the per-style presets below only layer deltas on top.
+   ────────────────────────────────────────────────────────────────────────── */
+:root {
+  --radius: 0.625rem;
+  --spacing: 0.25rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* base-nova — rounder panels. */
+:root {
+  --radius: 0.85rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Tailwind v4 drops the browser default; put it back so every control reads
+     as clickable. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Static-analysis markers in the JSON editor's gutter. Monaco renders outside the
+   Tailwind tree, so these read the shadcn tokens straight off :root. The panel
+   lists every finding in text as well — a marker is never the only carrier. */
+.lint-glyph::before {
+  content: "";
+  display: block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: 0.35rem auto;
+  border-radius: 9999px;
+}
+.lint-glyph-error::before { background: var(--destructive); }
+.lint-glyph-warning::before { background: var(--chart-4); }
+.lint-glyph-info::before { background: var(--muted-foreground); }
+
+.lint-line { width: 3px !important; margin-left: 3px; }
+.lint-line-error { background: var(--destructive); }
+.lint-line-warning { background: var(--chart-4); }
+.lint-line-info { background: var(--muted-foreground); }
+
+.lint-line-highlight { background: color-mix(in oklab, var(--accent) 70%, transparent); }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Embedded demo (/embedded) — a mock product site that hosts the survey.
+
+   Only the effects Tailwind utilities cannot express live here: the brand hue
+   the demo toolbar swaps at runtime, and the gradient/grid washes the hero is
+   built from. Everything else on that page is plain utilities.
+   ────────────────────────────────────────────────────────────────────────── */
+:root {
+  /* Follows `--primary` until the demo toolbar sets its own hue on <html>. */
+  --demo-brand: var(--primary);
+}
+
+/* Each demo route sets `--demo-brand` and this attribute on <html> as the page
+   is parsed; from there the host site's primary colour IS the brand, in both
+   colour schemes — `html[…]` outranks the `.dark` block above. The survey reads
+   the same tokens as every button on the page, so it re-skins with it. */
+html[data-demo-brand] {
+  --primary: var(--demo-brand);
+  --primary-foreground: var(--demo-brand-foreground);
+  --ring: var(--demo-brand);
+}
+
+.demo-gradient-text {
+  background-image: linear-gradient(
+    100deg,
+    var(--demo-brand),
+    color-mix(in oklab, var(--demo-brand) 40%, oklch(0.7 0.16 200))
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Faint graph-paper wash, faded out towards the bottom of the hero. */
+.demo-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--foreground) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 8%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 0%, black 25%, transparent 75%);
+  mask-image: radial-gradient(ellipse 75% 60% at 50% 0%, black 25%, transparent 75%);
+}
+
+.demo-glow {
+  background: radial-gradient(
+    ellipse 55% 45% at 50% -5%,
+    color-mix(in oklab, var(--demo-brand) 26%, transparent),
+    transparent 70%
+  );
+}
+
+.demo-brand-bg { background-color: var(--demo-brand); }
+.demo-brand-text { color: var(--demo-brand); }
+
+.demo-brand-soft {
+  background-color: color-mix(in oklab, var(--demo-brand) 12%, transparent);
+  color: color-mix(in oklab, var(--demo-brand) 78%, var(--foreground));
+}
+
+/* An embedded demo sets this attribute on <html> for as long as it is on screen.
+   Everything SurveyJS draws lives inside `[data-survey-root]`, so one rule marks
+   the boundary between the host site and the form — which is the question every
+   reviewer asks about an embedded demo. The ring pulses because a static outline
+   on a page this busy is easy to miss. */
+html[data-demo-highlight] [data-survey-root] {
+  outline: 2px dashed var(--demo-brand);
+  outline-offset: 3px;
+  animation: demo-survey-ring 1.9s ease-out infinite;
+}
+
+/* The label is a button rather than a pseudo-element, because it is also the
+   way out: whoever has seen where the form is drawn can dismiss the ring from
+   the ring itself, which is where they are already looking. */
+[data-survey-outline-label] {
+  display: none;
+}
+
+html[data-demo-highlight] [data-survey-root] [data-survey-outline-label] {
+  display: inline-flex;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 5;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-bottom-left-radius: 0.5rem;
+  background-color: var(--demo-brand);
+  color: var(--demo-brand-foreground, oklch(0.99 0 0));
+  font: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+html[data-demo-highlight] [data-survey-root] [data-survey-outline-label]:hover {
+  filter: brightness(1.08);
+}
+
+@keyframes demo-survey-ring {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--demo-brand) 40%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 16px color-mix(in oklab, var(--demo-brand) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--demo-brand) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-demo-highlight] [data-survey-root] {
+    animation: none;
+  }
+}
+
+/* The toolbar sits over the page and should read as an overlay, not as part of
+   the mock site. It is fully visible by default: on a phone there is no way to
+   reveal a dimmed control, and a reviewer who cannot find the toolbar cannot
+   use the demo. Only a mouse — which can hover it back to full strength — gets
+   the quiet version. */
+.demo-dock {
+  opacity: 1;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .demo-dock {
+    opacity: 0.55;
+  }
+  .demo-dock:hover,
+  .demo-dock:focus-within {
+    opacity: 1;
+  }
+}
+
+/* Blocks the encounter note draws with its own `html` questions. The note is a
+   clinical document, so a banner and two levels of callout are part of it — and
+   they are styled here rather than inline so the JSON stays readable. */
+.demo-note-banner,
+.demo-note-alert,
+.demo-note-note {
+  border-radius: 0.5rem;
+  padding: 0.75rem 0.875rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.demo-note-banner {
+  border: 1px solid color-mix(in oklab, var(--demo-brand) 28%, transparent);
+  background-color: color-mix(in oklab, var(--demo-brand) 10%, transparent);
+}
+
+.demo-note-alert {
+  border: 1px solid color-mix(in oklab, var(--destructive) 40%, transparent);
+  background-color: color-mix(in oklab, var(--destructive) 10%, transparent);
+  font-weight: 500;
+}
+
+.demo-note-note {
+  border: 1px solid var(--border);
+  background-color: var(--muted);
+}

@@ -1,0 +1,123 @@
+import {
+  checkoutSample,
+  clinicVisitSample,
+  customerSatisfactionSample,
+  encounterNoteSample,
+  getSchemaDefinition,
+  medicalFormSample,
+  type SurveyData,
+  type SurveyJSON,
+} from "@/schemas";
+import {
+  CADENCE_USER,
+  RIDGELINE_USER,
+  type DemoUser,
+} from "@/components/embedded/shared/demo-accounts";
+
+/**
+ * Every form in the template, in one list, because one page edits all of them.
+ *
+ * There is one editor for all of them — Survey Creator, opened on one form — and
+ * it is a URL worth sharing: `/configure?form=<id>`.
+ *
+ * `user` is what separates the two halves of the list. The three template forms
+ * are plain: one definition, one form. The three embedded ones are rendered *for
+ * somebody* — their JSON reads `{user.something}` — so the preview needs an
+ * account to render for, and it uses the first of the demo's preset users. The
+ * users themselves are edited in the demo, in the toolbar's popup.
+ */
+export interface FormEntry {
+  /** The schema id, and the `?form=` value that makes the URL shareable. */
+  readonly id: string;
+  readonly label: string;
+  readonly hint: string;
+  readonly json: SurveyJSON;
+  /** Answers behind the preview's Prefill, where the form has a sample. */
+  readonly prefill?: SurveyData;
+  /** Set when the form is rendered per user — the embedded demos. */
+  readonly user?: DemoUser;
+  /** Where the form itself lives, and what the primary button opens. */
+  readonly href: string;
+  /** The primary button's label: the honest verb for where it lands. */
+  readonly previewLabel: string;
+  /** True when `href` is somebody else's website rather than this shell. */
+  readonly embedded: boolean;
+  /** The definition in the repository, for anyone who wants the real file. */
+  readonly sourceHref: string;
+}
+
+const SOURCE_ROOT =
+  "https://github.com/surveyjs/surveyjs-nextjs/blob/main/src/schemas";
+
+function form(
+  id: string,
+  file: string,
+  rest: Omit<FormEntry, "id" | "json" | "sourceHref">,
+): FormEntry {
+  return {
+    id,
+    json: getSchemaDefinition(id).json,
+    sourceHref: `${SOURCE_ROOT}/${file}`,
+    ...rest,
+  };
+}
+
+export const FORMS: readonly FormEntry[] = [
+  form("medical-form", "medical-form.ts", {
+    label: "Claims intake",
+    hint: "The patient-intake form on this admin's own Claims page.",
+    prefill: medicalFormSample,
+    href: "/claims",
+    previewLabel: "Save and quit",
+    embedded: false,
+  }),
+  form("checkout", "checkout.ts", {
+    label: "Checkout",
+    hint: "A multi-step checkout wizard, validated page by page.",
+    prefill: checkoutSample,
+    href: "/checkout",
+    previewLabel: "Save and quit",
+    embedded: false,
+  }),
+  form("insurance-claim", "insurance-claim.ts", {
+    label: "Claim record",
+    hint: "The editor behind every row on the Records page.",
+    href: "/records",
+    previewLabel: "Save and quit",
+    embedded: false,
+  }),
+  form("customer-satisfaction", "customer-satisfaction.ts", {
+    label: "Satisfaction survey",
+    hint: "Embedded in a product site, addressed to the signed-in account.",
+    prefill: customerSatisfactionSample,
+    user: CADENCE_USER,
+    href: "/embedded/feedback",
+    previewLabel: "View Result",
+    embedded: true,
+  }),
+  form("encounter-note", "encounter-note.ts", {
+    label: "Encounter note",
+    hint: "The clinician's own note — eight pages, matrices with totals, calculated scores.",
+    prefill: encounterNoteSample,
+    user: RIDGELINE_USER,
+    href: "/embedded/chart",
+    previewLabel: "View Result",
+    embedded: true,
+  }),
+  form("clinic-visit", "clinic-visit.ts", {
+    label: "Appointment request",
+    hint: "Embedded in a clinic site, filled in from the patient's chart.",
+    prefill: clinicVisitSample,
+    user: RIDGELINE_USER,
+    href: "/embedded/clinic",
+    previewLabel: "View Result",
+    embedded: true,
+  }),
+] as const;
+
+export const DEFAULT_FORM_ID = FORMS[0].id;
+
+/** The form `?form=` names, falling back to the first rather than throwing. */
+export function getFormEntry(id: string | null | undefined): FormEntry {
+  return FORMS.find((item) => item.id === id) ?? FORMS[0];
+}
