@@ -2,7 +2,7 @@
 
 This example shows how to use Next.js along with the [SurveyJS Form Library](https://surveyjs.io/form-library/documentation/overview) and [Survey Creator](https://surveyjs.io/survey-creator/documentation/overview): complex forms are defined as JSON, edited in the visual designer, rendered on the server by the App Router, and styled with [shadcn/ui](https://ui.shadcn.com) through the SurveyJS theme adapter.
 
-Survey Creator is a commercial product. Put your license key in `NEXTJS_PUBLIC_SLK` (see `.env`) — it is applied in [src/lib/surveyjs-license.ts](src/lib/surveyjs-license.ts); without it the designer shows a watermark.
+Survey Creator is a commercial product. Put your license key in `NEXTJS_PUBLIC_SLK` (copy `.env.example` to `.env`) — it is applied in [src/lib/surveyjs-license.ts](src/lib/surveyjs-license.ts); without it the designer shows a watermark.
 
 ## Deploy your own
 
@@ -43,13 +43,13 @@ Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&ut
 - **JSON-driven forms.** Every form is a plain JSON definition; the app never hardcodes fields. Definitions live in [src/schemas/](src/schemas/).
 - **A renderer-agnostic model factory.** [createSurveyModel](src/schemas/createSurveyModel.ts) builds a configured `survey-core` model from a definition, and knows nothing about React — the same call works with any SurveyJS UI package.
 - **Theming with shadcn/ui.** The SurveyJS shadcn adapter (`survey-core/themes/adapters/shadcn-base-nova.css`) maps the form onto the same design tokens the rest of the app uses, so light/dark mode and radius/color changes apply to both at once. App-local tweaks go into [src/styles/](src/styles/).
-- **Edit and read-only modes.** [src/components/RecordsView.tsx](src/components/RecordsView.tsx) lists stored records and reuses the same definition to either display or edit one in a dialog.
+- **Create, edit and read-only modes.** [src/components/RecordsView.tsx](src/components/RecordsView.tsx) lists stored records, opens a blank one on *Add new*, and reuses the same definition to display or edit an existing record.
 - **One designer for every form.** [`/configure`](src/components/configure/CreatorPane.tsx) is Survey Creator, opened on one form: designer, JSON editor, logic overview, live preview and theme editor, all of it the product rather than a page built around it. It carries no chrome of its own — `?form=` says which form is being edited, and a reviewer arrives from that form and leaves back to it — and the primary button opens the page the form actually lives in, which for the embedded demos is somebody else’s website. `isAutoSave` writes through `saveSurveyFunc` as edits happen, into `localStorage`, so the server keeps rendering the canonical definition and the prerendered HTML stays intact.
   - A personalized definition is previewed for somebody: `onSurveyInstanceCreated` publishes the demo's first preset user as the `user` variable, so `{user.firstName}` resolves in the Preview tab exactly as it does on the site.
 - **The same definition as a dashboard.** [`/analytics?form=…`](src/components/analytics/DashboardPane.tsx) is SurveyJS Dashboard: `questions: survey.getAllQuestions()` hands it the schema, and it picks a visualization per question type, offers the alternatives in each item’s menu, aggregates, cross-filters when you click a bar, and filters by date. Nothing here maps a question to a chart by hand — the few overrides in [demo-responses.ts](src/analytics/demo-responses.ts) exist because an NPS rating deserves the NPS visualizer.
   - The responses are **generated from the definition** (a seeded generator, a few hundred rows, skewed so the charts have a shape) rather than shipped as a fixture: edit a form in the Creator and its dashboard follows, and there is no 20,000-line data file in the repository.
 - **The same definition as a PDF.** “Save as PDF” sits in the survey’s own navigation bar, next to Prefill: [exportSurveyToPdf](src/lib/pdf-export.ts) passes `model.toJSON()` and `model.data` to SurveyJS PDF Generator, so the document is the form as it stands — no print layout, no export mapping. `survey-pdf` is imported on demand, so it costs the page nothing until somebody asks for a file.
-- **A way in from paper.** `/claims` can be filled from a scanned form, a photo or a PDF: [`/api/extract`](src/app/api/extract/route.ts) hands the document *and this form’s schema* to the MIT-licensed [AI Form Response Extractor](https://github.com/surveyjs/ai-form-response-extractor), and the answers are merged into the survey on screen for a person to check — with the real validation and the real conditional logic. A filled CMS-1500 ships in [public/samples](public/samples/) to try it in one click. The key is server-side only; see [Environment](#environment).
+- **A way in from paper.** `/claims`, and a record added or edited on `/records`, can be filled from a scanned form, a photo or a PDF: [`/api/extract`](src/app/api/extract/route.ts) hands the document *and this form’s schema* to the MIT-licensed [AI Form Response Extractor](https://github.com/surveyjs/ai-form-response-extractor), and the answers are merged into the survey on screen for a person to check — with the real validation and the real conditional logic. A filled CMS-1500 ships in [public/samples](public/samples/) to try it in one click. The key is server-side only; see [Environment](#environment).
 - **Surveys embedded in somebody else’s site.** Three demos under [`/embedded`](src/app/embedded/), each rendered without the admin chrome (see the `(shell)` route group), each in its own brand colour, and each opened in a new tab from the sidebar. One host site, one form, sitting inline in the page the way a real embed does.
 
   They share one toolbar, and it is deliberately down to two claims. **The form is JSON:** *Configure JSON* opens this form’s definition on `/configure`, and what is saved there is what these pages render — the round trip a buyer is asking about, rather than a second editor bolted onto the host site. **The form is a document and a dashboard:** *PDF* downloads it with the answers so far, *Analytics* opens the charts for it. **The form is rendered for a person:** *Login as* switches between the three preset users each demo ships with, and *Edit the user* opens the signed-in account in a popup — and that editor is itself a SurveyJS survey, with the object it produces shown as JSON underneath it, so the library is editing its own input and there is no bespoke form code anywhere. Every demo passes that object to survey-core as one variable, so the definition reads `{user.firstName}` — in titles, in `defaultValueExpression` to arrive pre-answered, and in `visibleIf` to add or drop whole pages. Sign in as somebody else and the greeting, the values *and* the number of steps change. And the form is outlined wherever it lands — the dashed ring is always on, so there is no argument about which part of the page SurveyJS drew and which part is the host site. See [demo-accounts.ts](src/components/embedded/shared/demo-accounts.ts); the shared machinery is [useDemo](src/components/embedded/shared/useDemo.ts), so the next demo is a page component and a route.
@@ -100,7 +100,7 @@ One matching change in the pages: the editor currently takes `getSchemaDefinitio
 | `/` | Redirects to `/claims`. |
 | `/claims` | Patient intake / medical-insurance form — a paged wizard with a progress stepper, nested panels, matrix and dynamic-matrix questions, expressions and conditional visibility. |
 | `/checkout` | Multi-step checkout wizard — table of contents, required-field validation, input masks, panels gated by `visibleIf`, and a review page built from earlier answers via `{question}` piping. |
-| `/records` | Table of insurance-claim records; view one read-only or edit it in a dialog. The claim form mixes text, masked input, dropdown, radiogroup, checkbox, date, number, file upload and conditional panels. |
+| `/records` | Table of insurance-claim records; add one, view one read-only or edit it, and fill a new or edited record from a scanned document. The claim form mixes text, masked input, dropdown, radiogroup, checkbox, date, number, file upload and conditional panels. |
 | `/embedded/feedback` | Embedded demo — a mock product site whose hero hosts a satisfaction survey, rendered for the signed-in account. |
 | `/embedded/chart` | Embedded demo — a clinician’s workspace that is nothing but the survey: eight pages, matrices with totals and detail rows, calculated scores, file and camera capture, a signed attestation. |
 | `/embedded/clinic` | Embedded demo — a US clinic site whose appointment request arrives filled in from the patient’s chart, estimates the copay and flags a needed referral. |
@@ -133,7 +133,7 @@ src/
     navigation.ts               Route ↔ schema mapping used by the sidebar
   components/
     SurveyForm.tsx              Renders a model with survey-react-ui
-    RecordsView.tsx             Records table + view/edit dialog
+    RecordsView.tsx             Records table + add / view / edit a record
     AdminShell.tsx, Sidebar.tsx, ThemeSwitcher.tsx
     configure/                  Survey Creator, opened on one form
       CreatorPane.tsx           The designer itself, client-only
@@ -160,6 +160,8 @@ To add a form, drop a JSON definition into `src/schemas/`, register it in [src/s
 
 ## Environment
 
+Copy [.env.example](.env.example) to `.env` and fill in what you need — `.env` is git-ignored, so your keys stay out of the repository.
+
 | Variable | What it does |
 | --- | --- |
 | `NEXTJS_PUBLIC_SLK` | SurveyJS license key for Creator, Dashboard and PDF Generator. Without it they work but show an alert banner or a watermark. Applied in [surveyjs-license.ts](src/lib/surveyjs-license.ts). |
@@ -167,7 +169,7 @@ To add a form, drop a JSON definition into `src/schemas/`, register it in [src/s
 | `ANTHROPIC_API_KEY` | Enables `/api/extract` through Anthropic. Used when no OpenAI key is set. |
 | `EXTRACTOR_MODEL` | Overrides the model (defaults: `gpt-4o`, `claude-sonnet-5`). |
 
-With no LLM key the extraction endpoint answers 501 and the button on `/claims` says so: the feature is wired, and it starts working the moment a key appears. The keys are read on the server only and never reach the browser.
+With no LLM key the extraction endpoint answers 501 and the buttons on `/claims` and `/records` say so: the feature is wired, and it starts working the moment a key appears. The keys are read on the server only and never reach the browser.
 
 ## Tests
 

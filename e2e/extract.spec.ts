@@ -27,3 +27,16 @@ test("the extract endpoint rejects a request with no document", async ({ request
   expect(response.status()).toBe(400);
   expect((await response.json()).error).toContain("No document");
 });
+
+test("a new record can be started, and it offers extraction too", async ({ page }) => {
+  await page.goto("/records");
+
+  // Offered on the record the page opens on, and on a new one.
+  await expect(
+    page.getByRole("button", { name: "Fill from a document" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Add new" }).click();
+  await expect(page.getByRole("heading", { name: /New claim CLM-/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Fill from a document" })).toBeVisible();
+});
