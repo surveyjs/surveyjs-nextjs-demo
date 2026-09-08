@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   ArrowLeftIcon,
   CheckIcon,
@@ -20,6 +21,9 @@ import type { FormEntry } from "./forms";
 import "@/lib/surveyjs-license";
 import "survey-core/survey-core.css";
 import "survey-creator-core/survey-creator-core.css";
+import "survey-core/themes/adapters/shadcn-base-nova.css";
+import "@/styles/survey-overrides-shadcn.css";
+import "@/styles/survey-overrides-base-nova.css";
 
 /**
  * The tabs a form designer actually needs, and nothing that would need a server:
@@ -58,6 +62,7 @@ const CREATOR_OPTIONS: ICreatorOptions = {
  */
 export default function CreatorPane({ form }: { form: FormEntry }) {
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
   const [storageError, setStorageError] = useState<string | null>(null);
 
   // Built once per form. The Creator owns its state from here on: it is the
@@ -99,6 +104,14 @@ export default function CreatorPane({ form }: { form: FormEntry }) {
 
     return instance;
   }, [form]);
+
+  // The Creator has no light/dark switch of its own that the app could read, so
+  // the app tells it which palette to draw in. The shadcn tokens the adapter
+  // consumes live on <html>, and this page renders inside it, so the chrome and
+  // the form follow the header toggle together.
+  useEffect(() => {
+    creator.preferredColorPalette = resolvedTheme === "dark" ? "dark" : "light";
+  }, [creator, resolvedTheme]);
 
   // This browser's saved definition, if it has one, so the designer never opens
   // on the canonical JSON for somebody who has their own.
