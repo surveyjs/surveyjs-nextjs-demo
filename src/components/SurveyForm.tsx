@@ -61,6 +61,8 @@ export function SurveyForm({
   completedMessage = "Thank you. Your response has been submitted.",
   prefillData,
   prefillLabel = "Prefill demo data",
+  pdfInNavigation = true,
+  completeText,
   onModelReady,
 }: {
   schema: SchemaInput;
@@ -79,6 +81,17 @@ export function SurveyForm({
   completedMessage?: string;
   prefillData?: SurveyData;
   prefillLabel?: string;
+  /**
+   * "Save as PDF" in the survey own navigation bar. The records page turns it
+   * off and puts the same export beside the record actions instead.
+   */
+  pdfInNavigation?: boolean;
+  /**
+   * What the button that finishes the form says. Worth setting wherever the
+   * page has its own word for it - the records editor says Save changes above
+   * the form and should not say Complete below it.
+   */
+  completeText?: string;
   onModelReady?: (model: SurveyModel) => void;
 }) {
   const { definition, swapping } = useSavedDefinition(schema, schemaId);
@@ -89,8 +102,12 @@ export function SurveyForm({
     [definition, data, mode],
   );
 
+  useEffect(() => {
+    if (completeText) model.completeText = completeText;
+  }, [completeText, model]);
+
   usePrefillAction(model, prefillData, prefillLabel);
-  usePdfAction(model, schemaId);
+  usePdfAction(model, schemaId, pdfInNavigation);
   const { completed, resume } = useSubmission(model, onComplete, schemaId);
 
   useEffect(() => {
@@ -227,8 +244,13 @@ function usePrefillAction(
  * edited in the Creator — and `model.data` is what they have answered so far, so
  * the document is the form, filled in as far as it has been filled in.
  */
-function usePdfAction(model: SurveyModel, schemaId: string | undefined): void {
+function usePdfAction(
+  model: SurveyModel,
+  schemaId: string | undefined,
+  enabled: boolean,
+): void {
   useEffect(() => {
+    if (!enabled) return;
     const id = "sv-export-pdf";
 
     model.addNavigationItem({
@@ -245,7 +267,7 @@ function usePdfAction(model: SurveyModel, schemaId: string | undefined): void {
     return () => {
       model.navigationBar.removeActionById(id);
     };
-  }, [model, schemaId]);
+  }, [enabled, model, schemaId]);
 }
 
 /**
