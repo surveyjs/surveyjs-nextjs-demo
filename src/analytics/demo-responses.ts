@@ -172,12 +172,12 @@ const PRESETS: Record<string, AnalyticsPreset> = {
     responses: 240,
     items: [
       { name: "status", type: "pie" },
-      { name: "claimType", type: "pie" },
-      { name: "amountClaimed", type: "histogram" },
+      { name: "insuranceProgram", type: "pie" },
+      { name: "totalCharge", type: "histogram" },
     ],
     // A claim is not a number between one and a hundred: the question carries no
     // min/max, so the range is stated here instead.
-    derived: { amountClaimed: [140, 8600] },
+    derived: { totalCharge: [140, 8600] },
   },
 };
 
